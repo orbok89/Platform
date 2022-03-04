@@ -48,11 +48,48 @@ class Platform{
         c.fillRect(this.position.x,this.position.y,this.width,this.height)
     }
 }
+
+class Enemy {
+    constructor(x,y){
+        this.position={
+            x,
+            y
+        }
+        this.width= 40
+        this.height=40
+        this.velocity={
+            x:1,
+            y:0
+        }
+    }
+    draw(){
+        c.fillStyle='green'
+        c.fillRect(this.position.x,this.position.y,this.width,this.height)
+    }
+    reverse(prova){
+        prova=prova+1
+        if(prova> 60){
+            prova=0
+            this.velocity.x = -this.velocity.x
+        }
+        console.log(prova)
+        return prova
+    }
+    update(prova){
+        this.draw()
+        prova=this.reverse(prova)  
+        this.position.x+=this.velocity.x 
+        console.log('update' + prova)
+        return prova
+          
+}
+}
 function init(){
-        player= new Player()
-  platforms= [ new Platform(100, 530),new Platform(300, 530),new Platform(600, 530),new Platform(750, 530),new Platform(1200, 530)]
-    
-  scroll_offset=0
+    player= new Player()
+    platforms= [ new Platform(100, 530),new Platform(300, 530),new Platform(600, 530),new Platform(750, 530),new Platform(1195, 530),new Platform(1400, 430),new Platform(1850, 530),new Platform(2150, 530),new Platform(2300, 530),new Platform(2500, 530),new Platform(2700, 530)]
+    enemies=[new Enemy(650,490)]
+    scroll_offset=0
+    movimento_nemici=0
 }
  const keys={
     rigth:{
@@ -72,6 +109,9 @@ function animate(){
     platforms.forEach(platform => {
         platform.draw()
     });
+    enemies.forEach(enemy=>{
+        movimento_nemici= enemy.update(movimento_nemici)
+    } );
     //movimento del giocatore
     if (keys.rigth.pressed &&player.position.x<400){
         player.velocity.x=5
@@ -85,11 +125,17 @@ function animate(){
             platforms.forEach(platform => {
                 platform.position.x-=5
             });
+            enemies.forEach(enemy => {
+                enemy.position.x-=5
+            });
         }else if (keys.left.pressed){
             scroll_offset-=5
             console.log(scroll_offset)
             platforms.forEach(platform => {
                 platform.position.x+=5
+            });
+            enemies.forEach(enemy => {
+                enemy.position.x+=5
             });
         }
     }
@@ -101,6 +147,14 @@ function animate(){
     if(player.position.y>canvas.height){
         init()
     }
+    enemies.forEach(enemy=>{
+        if (player.position.x +player.width  >= enemy.position.x &&
+            player.position.x   <= enemy.position.x + enemy.width&&
+            player.position.y +player.height  >= enemy.position.y &&
+            player.position.y   <= enemy.position.y + enemy.height){
+            init()
+        }
+    })
     //collision
     platforms.forEach(platform => {
     if (player.position.y + player.height<=platform.position.y && 
