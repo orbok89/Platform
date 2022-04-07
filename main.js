@@ -27,7 +27,6 @@ class Player{
             this.draw()
             this.position.y+=this.velocity.y 
             this.position.x+=this.velocity.x 
-            if (this.position.y+this.height+this.velocity.y<= canvas.height)
             this.velocity.y+= gravity
               
     }
@@ -58,7 +57,7 @@ class Enemy {
         this.width= 40
         this.height=40
         this.velocity={
-            x:1,
+            x:10,
             y:0
         }
     }
@@ -72,14 +71,14 @@ class Enemy {
             prova=0
             this.velocity.x = -this.velocity.x
         }
-        console.log(prova)
+       
         return prova
     }
     update(prova){
         this.draw()
         prova=this.reverse(prova)  
         this.position.x+=this.velocity.x 
-        console.log('update' + prova)
+         
         return prova
           
 }
@@ -90,6 +89,7 @@ function init(){
     enemies=[new Enemy(650,490)]
     scroll_offset=0
     movimento_nemici=0
+    contatore=0
 }
  const keys={
     rigth:{
@@ -147,6 +147,7 @@ function animate(){
     if(player.position.y>canvas.height){
         init()
     }
+    //collsioni con i nemici
     enemies.forEach(enemy=>{
         if (player.position.x +player.width  >= enemy.position.x &&
             player.position.x   <= enemy.position.x + enemy.width&&
@@ -164,24 +165,42 @@ function animate(){
         player.velocity.y=0
     }
 });
+platforms.forEach(platform => {
+    if (player.position.y + player.height<=platform.position.y && 
+        player.position.y+player.height+player.velocity.y>=platform.position.y &&
+        player.position.x + player.width>=platform.position.x &&
+        player.position.x <= platform.position.x+ platform.width){
+        player.velocity.y=0
+    }
+});
 }
 init()
 animate()
 function move(keyCode){
+   
     switch (keyCode){
         case 65 :
             keys.left.pressed=true
+            console.log(player.velocity.y)
             break
         case 83 :
-            console.log('down')
+             
             break
         case 68 :
             keys.rigth.pressed=true
          
             break
         case 87 :
-            if (player.velocity.y===0 ){
-                player.velocity.y -= 20    
+            if(player.velocity.y==0){
+                contatore=0
+            }
+            if (contatore<=1 ){
+                
+                player.velocity.y -= 20
+                contatore=contatore+1 
+                console.log(player.velocity.y)
+                
+                
             }
             
             break
